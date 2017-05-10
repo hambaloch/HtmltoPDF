@@ -1,0 +1,66 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 5, 2017, 12:15:19 PM
+    Author     : Hamburger
+*/
+
+@font-face {
+	font-family: "helveticamedium";
+	src: url("../fonts/HelveticaNeueMed.ttf");
+}
+
+
+@font-face {
+	font-family: "helveticalight";
+	src: url("../fonts/HelveticaNeueLt.ttf");
+}
+
+.body {
+	margin: 0px;
+	padding: 0px;
+	font-family: "helveticalight";
+	background: #000;
+    width: 430px;
+    height: 225px;
+}
+.logo img{
+    width: 42px;
+    height: 69px;
+    padding: 34px 0 0 49px;
+}
+
+.name{
+    position: relative;
+    top: 25px;
+    padding: 4px 0 0 49px;
+  font-family: "helveticamedium";
+    color: #fff;
+    font-size: 20px;
+}
+
+.designation{
+    position: relative;
+    top: 40px;
+    left: -125px;
+    padding: 4px 0 0 29px;
+    font-style: "helveticalight";
+    color: grey;
+}
+.divider
+{
+    position: relative;
+    top: 45px;
+    width: 429px;
+    border: 1px dotted grey;
+}
+.subdivider{
+    position: relative;
+    top: 42px;
+    width: 130px;
+    left: 47px;
+    border: 2px solid #a44639;
+}
