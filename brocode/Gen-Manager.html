@@ -10,31 +10,215 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="gen-manager/front.css">
-          <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="/resources/demos/style.css">
-  <style>
-  #draggable {
-      }
-  </style>
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script>
-  $( function() {
-    $( "#draggable" ).draggable();
-  } );
-  </script>
+        <link rel="stylesheet" type="text/css" href="gen-manager/front.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="/resources/demos/style.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script>
+            $( function() {
+                $( "#draggable" ).draggable();
+            } );
+        </script>
+        <style>
+            #draggable{
+
+            }
+        </style>
     </head>
     <body>
-        <div class="body">
+        Font Style: <div id="container"></div>
+        <br>
+        <div id="content">
+
             <div id="draggable" class="logo"><img src="images/gen-manager.png"></div>
-            <span  class="name" contenteditable>Qasim Raza</span>
-            <span  class="designation" contenteditable>Designer</span>
-            <div id="draggable" class="divider">
+
+            <span id="sink" class="name" contenteditable>Qasim Raza</span>
+            <span class="designation" contenteditable>Designer</span>
+
+            <div  class="divider">
 
 
             </div>
-            <div id="draggable" class="subdivider"></div>
+            <div class="subdivider"></div>
         </div>
+        <button onclick="blue()">Blue</button>
+        <button onclick="red()">Red</button>
+        <button onclick="yellow()">Yellow</button>
+        <button onclick="grey()">Grey</button>
+        <button onclick="pink()">Pink</button>
+        <button onclick="orange()">Orange</button>
+        <button onclick="purple()">Purple</button>
+        <br>
+        <br>
+        <div id="editor"></div>
+        <button id="cmd">generate PDF</button>
+
+        <script>
+            function blue() {
+                document.getElementById("content").style.backgroundColor = "lightblue";
+            }
+
+            function red() {
+                document.getElementById("content").style.backgroundColor = "red";
+            }
+            function pink() {
+                document.getElementById("content").style.backgroundColor = "#ff6da5";
+            }
+            function yellow() {
+                document.getElementById("content").style.backgroundColor = "#ffef63";
+            }
+            function grey() {
+                document.getElementById("content").style.backgroundColor = "#c1bfbf";
+            }
+            function orange() {
+                document.getElementById("content").style.backgroundColor = "#ffad60";
+            } 
+            function purple() {
+                document.getElementById("content").style.backgroundColor = "#e068ff";
+            }
+
+
+
+            var doc = new jsPDF();
+            var specialElementHandlers = {
+                '#editor': function (element, renderer) {
+                    return true;
+                }
+            };
+
+            $('#cmd').click(function () {
+                doc.fromHTML($('#content').html(), 15, 15, {
+                    'width': 170,
+                    'elementHandlers': specialElementHandlers
+                });
+                doc.save('sample-file.pdf');
+            });
+        </script>
+        <script>
+            var FragBuilder = (function() {
+                var applyStyles = function(element, style_object) {
+                    for (var prop in style_object) {
+                        element.style[prop] = style_object[prop];
+                    }
+                };
+                var generateFragmentFromJSON = function(json) {
+                    var tree = document.createDocumentFragment();
+                    json.forEach(function(obj) {
+                        if (!('tagName' in obj) && 'textContent' in obj) {
+                            tree.appendChild(document.createTextNode(obj['textContent']));
+                        } else if ('tagName' in obj) {
+                            var el = document.createElement(obj.tagName);
+                            delete obj.tagName;
+                            for (part in obj) {
+                                var val = obj[part];
+                                switch (part) {
+                                    case ('textContent'):
+                                        el.appendChild(document.createTextNode(val));
+                                        break;
+                                    case ('style'):
+                                        applyStyles(el, val);
+                                        break;
+                                    case ('childNodes'):
+                                        el.appendChild(generateFragmentFromJSON(val));
+                                        break;
+                                    default:
+                                        if (part in el) {
+                                            el[part] = val;
+                                        }
+                                        break;
+                                            }
+                            }
+                            tree.appendChild(el);
+                        } else {
+                            throw "Error: Malformed JSON Fragment";
+                        }
+                    });
+                    return tree;
+                };
+                var generateFragmentFromString = function(HTMLstring) {
+                    var div = document.createElement("div"),
+                        tree = document.createDocumentFragment();
+                    div.innerHTML = HTMLstring;
+                    while (div.hasChildNodes()) {
+                        tree.appendChild(div.firstChild);
+                    }
+                    return tree;
+                };
+                return function(fragment) {
+                    if (typeof fragment === 'string') {
+                        return generateFragmentFromString(fragment);
+                    } else {
+                        return generateFragmentFromJSON(fragment);
+                    }
+                };
+            }());
+
+            function jsonp(url) {
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = url;
+                document.getElementsByTagName('body')[0].appendChild(script);
+            }
+
+            function replacestyle(url) {
+                if (!document.getElementById('style_tag')) {
+                    var style_tag = document.createElement('link');
+                    style_tag.rel = 'stylesheet';
+                    style_tag.id = 'style_tag';
+                    style_tag.type = 'text/css';
+                    document.getElementsByTagName('head')[0].appendChild(style_tag);
+                    replacestyle(url);
+                }
+                document.getElementById('style_tag').href = url;
+            }
+
+            function loadFonts(json) {
+                var select_frag = [
+                    {
+                        'tagName': 'select',
+                        'id': 'font-selection',
+                        'childNodes': [
+                            {
+                                'tagName': 'option',
+                                'value': 'default',
+                                'textContent': 'Default'}
+                        ]}
+                ];
+                json['items'].forEach(function(item) {
+                    var family_name = item.family,
+                        value = family_name.replace(/ /g, '+');
+
+                    if (item.variants.length > 0) {
+                        item.variants.forEach(function(variant) {
+                            value += ':' + variant;
+                        });
+                    }
+
+                    select_frag[0].childNodes.push({
+                        'tagName': 'option',
+                        'value': value,
+                        'textContent': family_name
+                    });
+                });
+
+                document.getElementById('container').appendChild(FragBuilder(select_frag));
+                document.getElementById('font-selection').onchange = function(e) {
+                    var font = this.options[this.selectedIndex].value,
+                        name = this.options[this.selectedIndex].textContent;
+                    if (font === 'default') {
+                        document.getElementById('sink').style.fontFamily = 'inherit';
+                    } else {
+                        document.getElementById('sink').style.fontFamily = name;
+                        replacestyle('https://fonts.googleapis.com/css?family=' + font);
+                    }
+                };
+            }
+
+            jsonp("https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyDBzzPRqWl2eU_pBMDr_8mo1TbJgDkgst4&sort=trending&callback=loadFonts");
+
+        </script>
     </body>
 </html>

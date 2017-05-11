@@ -19,7 +19,7 @@ and open the template in the editor.
 	src: url("../fonts/HelveticaNeueLt.ttf");
 }
 
-.body {
+#content {
 	margin: 0px;
 	padding: 0px;
 	font-family: "helveticalight";
